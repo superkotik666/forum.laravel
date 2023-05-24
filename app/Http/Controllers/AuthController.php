@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\Post;
 
 class AuthController extends Controller
 {
@@ -25,7 +26,7 @@ class AuthController extends Controller
         ]);
 
         if(auth("web")->attempt($data)) {
-            return 'Вы успешно авторизованы!';
+            return view("auth.forum");
         }
 
         return redirect(route("login"))->withErrors(["email" => "Пользователь не найден, либо данные введены не правильно"]);
@@ -54,5 +55,24 @@ class AuthController extends Controller
         return redirect(route("forum"));
     }
     
+    public function logout()
+    {
+        auth("web")->logout();
+
+        return redirect(route("home"));
+    }
+
+     public function forum(){
+        
+        $posts = Post::query()
+            ->orderBy("created_at", "DESC")->limit(3)->get();
+        
+
+            return view('auth.forum', [
+                "posts" => $posts,
+            ]);
+     }
+
 
     }
+
